@@ -160,4 +160,59 @@ function findAndSaveUser(Users) {
 - 위의 코드는 findOne과 save 메서드가 내부적으로 프로미스 객체를 가지고 있어서 가능하다.
 
 ### 7. async/await
-- 
+~~~javascript
+function findAndSaveUser(Users) {
+    Users.findOne({})
+        .then((user) => {
+            user.name = 'zero';
+            return user.save();
+        })
+        .then((user) => {
+            return Users.findOne({ gender: 'm'});
+        })
+        .then((user) => {
+            //생략
+        })
+        .catch(err => {
+            conole.error(err);
+        });
+}
+~~~
+- async/await 문법을 사용한 코드
+~~~javascript
+async function findAndSaveUser(Users) { // 해당 프로미스가 resolve될 때까지 기다린 뒤 다음 로직으로 넘어간다.
+    let user = await Users.findOne({}); // 이 코드가 resolve될 때까지 기다린 뒤, user 변수를 초기화한다.
+    user.name = 'zero';
+    user = await user.save();
+    user = await Users.findOne({gender : 'm'}); 
+    // 생략
+}
+~~~
+- try/catch 문으로 감싼 코드
+~~~javascript
+async function findAndSaveUser(Users) { 
+    try{
+        let user = await Users.findOne({}); 
+        user.name = 'zero';
+        user = await user.save();
+        user = await Users.findOne({gender : 'm'});
+        // 생략 
+    } catch(error) {
+        console.error(error);
+    }
+}
+~~~
+- 화살표 함수와 같이 쓰인 코드
+~~~javascript
+const findAndSaveUser = async (Users) => { 
+    try{
+        let user = await Users.findOne({}); 
+        user.name = 'zero';
+        user = await user.save();
+        user = await Users.findOne({gender : 'm'}); 
+        // 생략
+    } catch(error) {
+        console.error(error);
+    }
+};
+~~~
